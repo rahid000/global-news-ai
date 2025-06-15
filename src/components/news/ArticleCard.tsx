@@ -9,6 +9,7 @@ import { PlausibilityDisplay } from './PlausibilityDisplay';
 import { CalendarDays, Globe, Tags, Languages, Landmark, Trash2 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/button';
+import { useCallback } from 'react'; // Added useCallback
 
 interface ArticleCardProps {
   article: Article;
@@ -33,11 +34,11 @@ export function ArticleCard({ article, country, onImageGeneratedForArticle, isAd
   
   const publishedDateFormatted = article.publishedDate ? format(parseISO(article.publishedDate), "PPP") : "N/A";
 
-  const handleImageGenerated = (imageDataUri: string) => {
+  const handleImageGenerated = useCallback((imageDataUri: string) => {
     if (onImageGeneratedForArticle) {
       onImageGeneratedForArticle(article.id, imageDataUri);
     }
-  };
+  }, [onImageGeneratedForArticle, article.id]); // Wrapped with useCallback and added dependencies
 
   const handleDeleteClick = () => {
     onRequestDelete(article.id, article.headline);

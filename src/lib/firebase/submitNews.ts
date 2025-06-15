@@ -1,5 +1,5 @@
-import { db } from "@/lib/firebase";
-import type { NewsItem } from "@/lib/types/NewsItem";
+import { db } from "./firebase";
+import type { NewsItem } from "../types/NewsItem";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 
 export async function submitNewsItem(news: NewsItem): Promise<void> {
@@ -9,7 +9,6 @@ export async function submitNewsItem(news: NewsItem): Promise<void> {
   }
   const newsRef = collection(db, "news");
 
-  // Avoid duplicate by checking URL
   const q = query(newsRef, where("url", "==", news.url));
   const snapshot = await getDocs(q);
   if (!snapshot.empty) {
