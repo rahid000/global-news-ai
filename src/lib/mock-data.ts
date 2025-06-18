@@ -1,4 +1,3 @@
-
 import type { Country, Category, Article } from './types';
 
 export const countries: Country[] = [
@@ -210,6 +209,7 @@ export const categories: Category[] = [
   { id: 'science', name: 'Science' },
   { id: 'health', name: 'Health' },
   { id: 'entertainment', name: 'Entertainment' },
+  { id: 'general', name: 'General'},
 ];
 
 export const articles: Article[] = [
@@ -220,12 +220,11 @@ export const articles: Article[] = [
     summaries: {
       en: 'A leading tech company today announced a revolutionary AI chip that boasts a tenfold increase in processing power for complex machine learning tasks.',
       bn: 'একটি শীর্ষস্থানীয় প্রযুক্তি কোম্পানি আজ একটি বিপ্লবী এআই চিপ উন্মোচন করেছে যা জটিল মেশিন লার্নিং কাজের জন্য দশগুণ প্রক্রিয়াকরণ ক্ষমতা বৃদ্ধি করবে।',
-      // US native is English, so 'en' is already there.
     },
     source: 'TechChronicle',
     category: 'Technology',
     publishedDate: '2024-07-28T10:00:00Z',
-    originalImageUrl: 'https://placehold.co/600x400.png?text=AI+Chip',
+    originalImageUrl: 'https://placehold.co/600x400.png',
   },
   {
     id: 'jp-sports-1',
@@ -239,7 +238,6 @@ export const articles: Article[] = [
     source: 'Japan Sports Today',
     category: 'Sports',
     publishedDate: '2024-07-28T14:30:00Z',
-    // No original image, AI will attempt to generate
   },
   {
     id: 'bd-politics-1',
@@ -253,7 +251,7 @@ export const articles: Article[] = [
     source: 'Dhaka Times',
     category: 'Politics',
     publishedDate: '2024-07-27T09:15:00Z',
-    originalImageUrl: 'https://placehold.co/600x400.png?text=Parliament+BD',
+    originalImageUrl: 'https://placehold.co/600x400.png',
   },
   {
     id: 'gb-business-1',
@@ -262,7 +260,6 @@ export const articles: Article[] = [
     summaries: {
       en: 'British technology startups have attracted a record amount of investment in the second quarter, signaling a resilient innovation sector.',
       bn: 'ব্রিটিশ প্রযুক্তি স্টার্টআপগুলি দ্বিতীয় প্রান্তিকে রেকর্ড পরিমাণ বিনিয়োগ আকর্ষণ করেছে, যা একটি স্থিতিশীল উদ্ভাবনী খাতের ইঙ্গিত দেয়।',
-      // UK native is English
     },
     source: 'Financial Gazette',
     category: 'Business',
@@ -280,7 +277,7 @@ export const articles: Article[] = [
     source: 'Berlin Nachrichten',
     category: 'World',
     publishedDate: '2024-07-26T16:00:00Z',
-    originalImageUrl: 'https://placehold.co/600x400.png?text=Germany+Climate',
+    originalImageUrl: 'https://placehold.co/600x400.png',
   },
   {
     id: 'us-science-1',
@@ -306,8 +303,37 @@ export const articles: Article[] = [
     source: 'Nikkei Tech',
     category: 'Technology',
     publishedDate: '2024-07-29T11:00:00Z',
-    originalImageUrl: 'https://placehold.co/600x400.png?text=Robotics+Expo',
+    originalImageUrl: 'https://placehold.co/600x400.png',
   },
+  {
+    id: 'af-youtube-news-Jgzli-g24TU',
+    countryCode: 'AF',
+    headline: 'Afghanistan Daily News Update - July 23, 2024',
+    summaries: {
+      en: 'A video summary of key news events in Afghanistan for July 23, 2024. (Includes YouTube video link)',
+      bn: '২৩শে জুলাই, ২০২৪ তারিখের আফগানিস্তানের গুরুত্বপূর্ণ খবরের ভিডিও সারাংশ। (ইউটিউব ভিডিও লিঙ্ক অন্তর্ভুক্ত)',
+    },
+    source: 'YouTube (News Source Unspecified)',
+    category: 'General',
+    publishedDate: '2024-07-23T12:00:00Z',
+    videoUrl: 'https://youtu.be/Jgzli-g24TU?si=_WmN67oMHoihwz21',
+    originalImageUrl: undefined,
+  },
+  // Removed the problematic object that was causing the parsing error.
+  // {
+  //   id: 'af-youtube-news-3SxZhYSbTYs',
+  //   countryCode: 'AF',
+  //   headline: 'New Afghanistan Video Update - August 2, 2024',
+  //   summaries: {
+  //     en: 'A new video summary of key news events in Afghanistan. (Includes YouTube video link)',
+  //     bn: 'আফগানিস্তানের গুরুত্বপূর্ণ খবরের নতুন ভিডিও সারাংশ। (ইউটিউব ভিডিও লিঙ্ক অন্তর্ভুক্ত)',
+  //   },
+  //   source: 'YouTube',
+  //   category: 'General',
+  //   publishedDate: new Date().toISOString(), // This line was causing the error
+  //   videoUrl: 'https://youtu.be/3SxZhYSbTYs?si=A8SXdlonKpsrPZjG',
+  //   originalImageUrl: undefined,
+  // },
 ];
 
     

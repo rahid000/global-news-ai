@@ -1,0 +1,65 @@
+
+import type { NewsItem } from "@/lib/types/NewsItem";
+import { saveMultipleNewsItemsToFirestore } from "@/lib/firestoreUtils";
+import { newsSourcesConfig } from "@/lib/newsSourcesConfig";
+// Import placeholder scrapers for Austrian sources
+import { fetchDerStandardFetcher } from "./derStandardFetcher";
+import { fetchORFFetcher } from "./oRFFetcher";
+
+export async function fetchAustriaNews(): Promise<void> {
+  const countryCode = "AT";
+  console.log(`📰🇦🇹 Starting to fetch news for ${countryCode}...`);
+  const allFetchedNews: Omit<NewsItem, 'id' | 'countryCode'>[] = [];
+  let successfulSourceFetches = 0;
+  let failedSourceFetches = 0;
+
+  const countryConfig = newsSourcesConfig.find(c => c.countryCode === countryCode);
+  if (!countryConfig) {
+    console.error(`[fetchAustriaNews] Configuration for ${countryCode} not found in newsSourcesConfig.`);
+    return;
+  }
+
+  for (const source of countryConfig.sources) {
+    let newsItems: Omit<NewsItem, 'id' | 'countryCode'>[] = [];
+    try {
+      console.log(`[fetchAustriaNews] Fetching from ${source.name} (${source.url})...`);
+      if (source.name === "Der Standard") {
+        newsItems = await fetchDerStandardFetcher();
+      } else if (source.name === "ORF") {
+        newsItems = await fetchORFFetcher();
+      } else {
+        console.warn(`[fetchAustriaNews] No specific scraper implemented for ${source.name}. Skipping.`);
+      }
+
+      if (newsItems.length > 0) {
+        allFetchedNews.push(...newsItems);
+        console.log(`[fetchAustriaNews] Successfully fetched ${newsItems.length} articles from ${source.name}.`);
+        successfulSourceFetches++;
+      } else {
+        console.log(`[fetchAustriaNews] No articles fetched from ${source.name}.`);
+        if (source.name === "Der Standard" || source.name === "ORF") {
+             successfulSourceFetches++;
+        }
+      }
+    } catch (error) {
+      console.error(`[fetchAustriaNews] Error fetching news from ${source.name}:`, error);
+      failedSourceFetches++;
+    }
+  }
+
+  if (allFetchedNews.length > 0) {
+    console.log(`[fetchAustriaNews] Submitting ${allFetchedNews.length} total Austrian articles to Firestore...`);
+    try {
+      await saveMultipleNewsItemsToFirestore(countryCode, allFetchedNews);
+      console.log(`[fetchAustriaNews] All fetched Austrian news items submitted to Firestore.`);
+    } catch (error) {
+      console.error(`[fetchAustriaNews] Error submitting Austrian news items to Firestore:`, error);
+    }
+  } else {
+    console.log(`[fetchAustriaNews] No new Austrian articles to submit to Firestore.`);
+  }
+  
+  console.log(`[fetchAustriaNews] Finished fetching for ${countryCode}. Sources processed: ${countryConfig.sources.length}. Successful source operations: ${successfulSourceFetches}. Failed source operations: ${failedSourceFetches}. Total articles for submission: ${allFetchedNews.length}.`);
+}
+
+    
