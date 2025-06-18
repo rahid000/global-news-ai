@@ -1,61 +1,97 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 import type { NewsItem } from "@/lib/types/NewsItem";
+import { DateTime } from "luxon"; // Standard import for luxon
 
 export async function fetchTOLONews(
-  category: NewsItem["category"] = "Politics" // Default category if not specified
+  category: NewsItem["category"] = "Politics"
 ): Promise<NewsItem[]> {
-  const url = "https://tolonews.com/afghanistan"; // Main Afghanistan news page
+  const sourceUrl = "https://tolonews.com/";
+  const baseUrl = "https://tolonews.com";
   const items: NewsItem[] = [];
+  console.log(`[fetchTOLONews] Attempting to fetch news from: ${sourceUrl} for category: ${category}`);
 
   try {
-    const { data } = await axios.get(url, { timeout: 15000 });
+    const { data, status } = await axios.get(sourceUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+      },
+      timeout: 20000, // Increased timeout
+    });
+
+    console.log(`[fetchTOLONews] Successfully fetched page. Status: ${status}`);
     const $ = cheerio.load(data);
 
-    $("div.view-content .views-row").each((_, el) => {
+    // Using the DOM structure provided: .view-content -> .views-row -> .title -> h2 -> a
+    const articleRows = $(".view-content .views-row");
+    console.log(`[fetchTOLONews] Found ${articleRows.length} potential article rows using selector ".view-content .views-row".`);
+
+    if (articleRows.length === 0) {
+      console.warn("[fetchTOLONews] No article rows found. The website structure might have changed or the selector is incorrect.");
+      const bodySnippet = $('body').html()?.substring(0, 2000) || "No body HTML found.";
+      console.log(`[fetchTOLONews] Body HTML snippet (first 2000 chars): ${bodySnippet}...`);
+      return items;
+    }
+
+    articleRows.each((index, el) => {
       const articleElement = $(el);
-      const titleElement = articleElement.find(".post-title a");
+      // Finding title and link specifically within the .title div and then h2 > a
+      const titleElement = articleElement.find(".title h2 a");
       const title = titleElement.text().trim();
-      const href = titleElement.attr("href");
+      const relativeLink = titleElement.attr("href");
 
-      // Attempt to get a summary; TOLO News structure might vary
-      let summary = articleElement.find(".post-summary p, .views-field-field-summary .field-content").first().text().trim();
-      if (!summary) {
-        summary = title; // Fallback to title if no distinct summary found
-      }
-      
-      // Attempt to get published date
-      // TOLO News has dates in various formats, this is a basic attempt.
-      // Example: <span class="extra-date">1 Hour Ago</span> or <span class="post-created">08/07/2024 - 15:38</span>
-      // This part might need more robust date parsing if specific dates are required.
-      // For now, we'll use current date as fallback.
-      const publishedAt = new Date().toISOString();
+      if (title && relativeLink) {
+        const fullUrl = relativeLink.startsWith("http") ? relativeLink : `${baseUrl}${relativeLink}`;
+        
+        let publishedAt: string;
+        try {
+          // Attempt to parse a date from the page if available, otherwise use current time
+          // This part is placeholder as TOLO News date parsing can be complex and site-specific
+          // For now, using current Kabul time as per previous logic if no specific date is found
+          publishedAt = DateTime.now().setZone("Asia/Kabul").toISO()!;
+        } catch (e) {
+          console.warn("[fetchTOLONews] Luxon DateTime failed for current time, using simple ISO string", e);
+          publishedAt = new Date().toISOString();
+        }
+        
+        // Summary: Using title as summary for now, as extracting full summary can be complex
+        const summary = title; 
 
-
-      if (title && href) {
-        const fullUrl = href.startsWith("http") ? href : "https://tolonews.com" + href;
         items.push({
           title,
-          summary: summary,
+          summary,
           url: fullUrl,
           source: "TOLO News",
-          category, // Category is passed in, as TOLO main page covers various topics
+          category,
           publishedAt: publishedAt,
           countryCode: "AF",
-          verified: true, // Assuming news from TOLO is generally verified, can be adjusted
+          verified: true, // Assuming verified as it's directly from source; can be changed
         });
+        console.log(`[fetchTOLONews] ✅ Successfully extracted: Title='${title}', URL='${fullUrl}'`);
+      } else {
+        console.warn(`[fetchTOLONews] ⚠️ Skipped row ${index + 1} due to missing title or link.`);
+        const rowHtmlSnippet = articleElement.html()?.substring(0,500) || "Could not get HTML for this row.";
+        console.log(`[fetchTOLONews] HTML for SKIPPED row ${index + 1} (first 500 chars):\n${rowHtmlSnippet}\n-------------------------`);
       }
     });
-    console.log(`Fetched ${items.length} items from TOLO News`);
+
+    if (items.length === 0 && articleRows.length > 0) {
+        console.warn(`[fetchTOLONews] CRITICAL: Processed ${articleRows.length} article rows but extracted 0 items. This might indicate issues with inner selectors (.title h2 a) or empty content within found rows.`);
+    } else if (items.length > 0) {
+        console.log(`[fetchTOLONews] Successfully processed. Extracted ${items.length} items from TOLO News.`);
+    }
+
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(`Axios error fetching TOLO News for category ${category}: ${error.message}`);
+      console.error(`[fetchTOLONews] Axios error fetching TOLO News: ${error.message}`);
       if (error.response) {
-        console.error('Error Response Data:', error.response.data);
-        console.error('Error Response Status:', error.response.status);
+        console.error('[fetchTOLONews] Error Response Status:', error.response.status);
+        console.error('[fetchTOLONews] Error Response Data (first 200 chars):', String(error.response.data)?.substring(0,200));
+      } else if (error.request) {
+        console.error('[fetchTOLONews] No response received for TOLO News:', error.request);
       }
     } else {
-      console.error(`Error fetching TOLO News for category ${category}:`, error);
+      console.error(`[fetchTOLONews] Generic error fetching TOLO News:`, error);
     }
   }
   return items;

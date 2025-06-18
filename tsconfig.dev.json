@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    // অন্যান্য অপশন
+  },
+  "include": [
+    "src",
+    "global_news_ai/.eslintrc.js"
+  ]
+}
