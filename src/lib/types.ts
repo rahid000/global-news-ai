@@ -1,3 +1,4 @@
+
 export interface Country {
   code: string;
   name: string;
@@ -28,6 +29,7 @@ export interface Article {
   category: string; // Corresponds to Category['name'] for simplicity in mock data
   publishedDate: string; // ISO 8601 string
   originalImageUrl?: string;
+  videoUrl?: string; // Optional field for video URLs
 }
 
 export type PlausibilityStatus = "AI Verified" | "Potentially Misleading" | "Uncertain/Needs More Info";

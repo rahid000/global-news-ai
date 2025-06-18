@@ -319,21 +319,20 @@ export const articles: Article[] = [
     videoUrl: 'https://youtu.be/Jgzli-g24TU?si=_WmN67oMHoihwz21',
     originalImageUrl: undefined,
   },
-  // Removed the problematic object that was causing the parsing error.
-  // {
-  //   id: 'af-youtube-news-3SxZhYSbTYs',
-  //   countryCode: 'AF',
-  //   headline: 'New Afghanistan Video Update - August 2, 2024',
-  //   summaries: {
-  //     en: 'A new video summary of key news events in Afghanistan. (Includes YouTube video link)',
-  //     bn: 'আফগানিস্তানের গুরুত্বপূর্ণ খবরের নতুন ভিডিও সারাংশ। (ইউটিউব ভিডিও লিঙ্ক অন্তর্ভুক্ত)',
-  //   },
-  //   source: 'YouTube',
-  //   category: 'General',
-  //   publishedDate: new Date().toISOString(), // This line was causing the error
-  //   videoUrl: 'https://youtu.be/3SxZhYSbTYs?si=A8SXdlonKpsrPZjG',
-  //   originalImageUrl: undefined,
-  // },
+  {
+    id: 'af-youtube-news-3SxZhYSbTYs',
+    countryCode: 'AF',
+    headline: 'New Afghanistan Video Update - August 2, 2024',
+    summaries: {
+      en: 'A new video summary of key news events in Afghanistan. (Includes YouTube video link)',
+      bn: 'আফগানিস্তানের গুরুত্বপূর্ণ খবরের নতুন ভিডিও সারাংশ। (ইউটিউব ভিডিও লিঙ্ক অন্তর্ভুক্ত)',
+    },
+    source: 'YouTube',
+    category: 'General',
+    publishedDate: new Date().toISOString(), // Corrected syntax
+    videoUrl: 'https://youtu.be/3SxZhYSbTYs?si=A8SXdlonKpsrPZjG',
+    originalImageUrl: undefined,
+  },
 ];
 
     
